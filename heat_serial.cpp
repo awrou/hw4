@@ -94,11 +94,13 @@ int main(int argc, char *argv[]){
   dataFile.open("temp_array.txt");
   for(int i=0; i<size; i++){
     for(int j=0; j<size; j++){
-      dataFile << parray[i][j]<<" "<< i <<" "<< j <<endl;
+      dataFile << i <<" "<< j<<" "<< parray[i][j] <<endl;
     }
   }
 
   dataFile.close();
+  
+  cout<<"Success! Heat diffusion array written to file"<<endl;
   
   /* Gnuplot gp;
   gp << "set xrange [0:99]\n set yrange [0:99]\n";
