@@ -3,11 +3,13 @@
 #include<math.h> /* cos, pow */
 #include<string.h> /* memcpy */
 #include<fstream> /* ofstream */
+#include<time.h> /* clock_t */
 using namespace std;
 //#include "gnuplot-iostream.h"
 
 int main(int argc, char *argv[]){
-
+  clock_t t;
+  t = clock();
   const int size=atof(argv[1]);
   const double kappa = 1;
   //Array spacing is pi/length of array. deltay=deltax
@@ -87,13 +89,17 @@ int main(int argc, char *argv[]){
 
   avg=temp_sum/pow(size,2);
 
+  t =(clock() - t)/CLOCKS_PER_SEC;
+  
   cout<<"The volume averaged temperature is: " << avg << endl;
+  cout<<"Runtime: "<< t << " s" <<endl;
 
   //Writing final array to file
   ofstream dataFile;
   dataFile.open("temp_array.txt");
   dataFile << "Array Size: " << size <<"^2"<<endl;
   dataFile << "Volume averaged temperature: " << avg <<endl;
+  dataFile << "Total Runtime: " << t <<" s" <<endl;
   for(int i=0; i<size; i++){
     for(int j=0; j<size; j++){
       dataFile << i <<" "<< j<<" "<< parray[i][j] <<endl;
@@ -102,7 +108,7 @@ int main(int argc, char *argv[]){
 
   dataFile.close();
   
-  cout<<"Success! Heat diffusion array written to file"<<endl;
+  cout<<"Success! Heat diffusion data written to file"<<endl;
   
   /* Gnuplot gp;
   gp << "set xrange [0:99]\n set yrange [0:99]\n";
