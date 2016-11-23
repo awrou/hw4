@@ -2,6 +2,7 @@
 #include<stdlib.h>
 #include<math.h> /* cos, pow */
 #include<string.h> /* memcpy */
+#include<fstream> /* ofstream */
 using namespace std;
 //#include "gnuplot-iostream.h"
 
@@ -12,7 +13,7 @@ int main(int argc, char *argv[]){
   //Array spacing is pi/length of array. deltay=deltax
   const double deltax=M_PI/size;
   //deltat should be smaller than deltax^2/(4*kappa)
-  const double deltat=pow(deltax,2)/(8*kappa);
+  const double deltat=pow(deltax,2)/(10*kappa);
   const double time = 0.5*pow(M_PI,2)/kappa;
   //time step
   const int n = time/deltat;
@@ -88,6 +89,17 @@ int main(int argc, char *argv[]){
 
   cout<<"The volume averaged temperature is: " << avg << endl;
 
+  //Writing final array to file
+  ofstream dataFile;
+  dataFile.open("temp_array.txt");
+  for(int i=0; i<size; i++){
+    for(int j=0; j<size; j++){
+      dataFile << parray[i][j]<<" "<< i <<" "<< j <<endl;
+    }
+  }
+
+  dataFile.close();
+  
   /* Gnuplot gp;
   gp << "set xrange [0:99]\n set yrange [0:99]\n";
   gp << "set pm3d\n";
