@@ -92,6 +92,8 @@ int main(int argc, char *argv[]){
   //Writing final array to file
   ofstream dataFile;
   dataFile.open("temp_array.txt");
+  dataFile << "Array Size: " << size <<"^2"<<endl;
+  dataFile << "Volume averaged temperature: " << avg <<endl;
   for(int i=0; i<size; i++){
     for(int j=0; j<size; j++){
       dataFile << i <<" "<< j<<" "<< parray[i][j] <<endl;
