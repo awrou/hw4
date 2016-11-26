@@ -4,23 +4,23 @@
 #include<string.h> /* memcpy */
 #include<fstream> /* ofstream */
 #include<time.h> /* clock_t, CLOCKS_PER_SEC */
+//#include<omp.h>
 using namespace std;
 //#include "gnuplot-iostream.h"
 
-double sqr(double x){
-  return x*x;
-}
-
 int main(int argc, char *argv[]){
+  
   clock_t t;
   t = clock();
-  const int size=atof(argv[1]);
+  const int size = atof(argv[1]);
+  const int nthreads = atof(argv[2]);
+  
   const double kappa = 1;
   //Array spacing is pi/length of array. deltay=deltax
   const double deltax=M_PI/size;
   //deltat should be smaller than deltax^2/(4*kappa)
-  const double deltat=sqr(deltax)/(6*kappa);
-  const double time = 0.5*sqr(M_PI)/kappa;
+  const double deltat =pow(deltax,2)/(6*kappa);
+  const double time = 0.5*pow(M_PI,2)/kappa;
   //time step
   const int n = time/deltat;
   double temp_sum=0;
@@ -28,9 +28,9 @@ int main(int argc, char *argv[]){
 
   //Initializing square 2D array of pointers to array
   double** parray = new double*[size];
-  for(int i = 0; i< size; i++)
+  for(int i = 0; i< size; i++){
     parray[i] = new double[size];
-
+  }
   //Initializing n+1 square 2D array of pointers to array
   double** parray_np = new double*[size];
   for(int i = 0; i< size; i++){
@@ -45,8 +45,8 @@ int main(int argc, char *argv[]){
   //Initializing array boundary conditions
   for(int i = 0; i< size; i++){
     //First and last column initialized
-    parray[i][0] = sqr(cos(i*deltax));
-    parray[i][size-1] = sqr(sin(i*deltax));
+    parray[i][0] = pow(cos(i*deltax),2);
+    parray[i][size-1] = pow(sin(i*deltax),2);
     //parray[0][i] = parray[size-1][i];
   }
 
@@ -60,23 +60,24 @@ int main(int argc, char *argv[]){
 
   //Doing n time steps of updates
   for(int k = 0; k < n; k++){
-
     //Updating center blocks
+    #pragma omp parallel for num_threads(nthreads)
     for(int i = 1; i < size-1; i++){
       for(int j = 1; j < size-1; j++){
-	parray_np[i][j] = parray[i][j]+deltat*kappa*(parray[i-1][j]+parray[i+1][j]+parray[i][j-1]+parray[i][j+1]-4*parray[i][j])/(sqr(deltax));
+	parray_np[i][j] = parray[i][j]+deltat*kappa*(parray[i-1][j]+parray[i+1][j]+parray[i][j-1]+parray[i][j+1]-4*parray[i][j])/(pow(deltax,2));
       }
     }
-
+    
     //Updating first and last row periodic boundary conditions
+    #pragma omp parallel for num_threads(nthreads)
     for(int j=1; j < size-1; j++){
-      parray_np[0][j]     =parray[0][j]+deltat*kappa*(parray[size-1][j]+parray[1][j]+parray[0][j-1]+parray[0][j+1]-4*parray[0][j])/(sqr(deltax));
-      parray_np[size-1][j]=parray[size-1][j]+deltat*kappa*(parray[size-2][j]+parray[0][j]+parray[size-1][j-1]+parray[size-1][j+1]-4*parray[size-1][j])/(sqr(deltax));
+      parray_np[0][j]     =parray[0][j]+deltat*kappa*(parray[size-1][j]+parray[1][j]+parray[0][j-1]+parray[0][j+1]-4*parray[0][j])/(pow(deltax,2));
+      parray_np[size-1][j]=parray[size-1][j]+deltat*kappa*(parray[size-2][j]+parray[0][j]+parray[size-1][j-1]+parray[size-1][j+1]-4*parray[size-1][j])/(pow(deltax,2));
     }
 
     //Moving array n+1 to n
     //memcpy(parray, parray_np, sizeof(parray));
-
+    #pragma omp parallel for num_threads(nthreads)
     for(int i=0; i< size;i++){
       for(int j=0; j< size; j++){
 	parray[i][j]=parray_np[i][j];
@@ -85,13 +86,14 @@ int main(int argc, char *argv[]){
   }
 
   //Final volume averaged temperature
+  #pragma omp parallel for num_threads(nthreads)
   for(int i = 0; i < size; i++){
       for(int j = 0; j < size; j++){
 	temp_sum+=parray[i][j];
       }
   }
 
-  avg=temp_sum/sqr(size);
+  avg=temp_sum/pow(size,2);
 
   t =(clock() - t);
   
@@ -101,7 +103,7 @@ int main(int argc, char *argv[]){
   //Writing final array to file
   ofstream dataFile;
   char buffer[33];
-  sprintf(buffer,"temp_array_serial_%d.txt",size);
+  sprintf(buffer,"temparray_omp_%d.txt",size);
   dataFile.open(buffer);
   dataFile << "Array Size: " << size <<"^2"<<endl;
   dataFile << "Volume averaged temperature: " << avg <<endl;
