@@ -34,8 +34,8 @@ int main(int argc, char *argv[]){
   const double time = 0.5*sqr(M_PI)/kappa;
   //time step
   const int n = time/deltat;
-  double temp_sum=0;
-  double avg = 0;
+  //double temp_sum=0;
+  //double avg = 0;
 
   int nrows = size/nprocess;
 
@@ -48,11 +48,11 @@ int main(int argc, char *argv[]){
     }
 
   //Initializing array boundary conditions
-    for(int i = 0; i< size; i++){
+      for(int i = 0; i< size; i++){
 	parray[1][i] = sqr(cos((i+rank*nrows)*deltax));
 	parray[size/nprocess][i] = sqr(sin((i+rank*nrows)*deltax));
       }
-
+    
   double parray_np[nrows+2][size];
     for(int i=0;i<nrows+2;i++){
       for(int j=0; j<size;j++){
@@ -100,21 +100,19 @@ int main(int argc, char *argv[]){
     MPI_Waitall(4, request, status);
 
     //Final volume averaged temperature
-    for(int i = 1; i < nrows+1; i++){
-      for(int j = 0; j < size; j++){
-   	temp_sum+=parray[i][j];
-      }
-    }
+    //for(int i = 1; i < nrows+1; i++){
+    //  for(int j = 0; j < size; j++){
+    //	temp_sum+=parray[i][j];
+    //  }
+    //}
     
   }
 
-  avg=temp_sum/sqr(size);
+  //avg=temp_sum/sqr(size);
 
   t2 = MPI_Wtime() - t1;
-
-  MPI_Finalize();
   
-  cout<<"The volume averaged temperature is: " << avg << endl;
+  //cout<<"The volume averaged temperature is: " << avg << endl;
   cout<<"Total Runtime: "<< t2 <<" s" <<endl;
 
   //Writing final array to file
@@ -123,7 +121,7 @@ int main(int argc, char *argv[]){
   sprintf(buffer,"temp_array_mpi_%d.txt",size);
   dataFile.open(buffer);
   dataFile << "Array Size: " << size <<"^2"<<endl;
-  dataFile << "Volume averaged temperature: " << avg <<endl;
+  //dataFile << "Volume averaged temperature: " << avg <<endl;
   dataFile << "Total Runtime: " << t2 <<" s" <<endl;
   for(int i=1; i<nrows+1; i++){
     for(int j=0; j<size; j++){
@@ -143,5 +141,7 @@ int main(int argc, char *argv[]){
   gp << "splot '-' matrix" <<"\n";
   gp.send1d(parray);
   gp.flush();*/
+
+  MPI_Finalize();
   
 }

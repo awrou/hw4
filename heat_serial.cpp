@@ -71,7 +71,7 @@ int main(int argc, char *argv[]){
     //Updating first and last row periodic boundary conditions
     for(int j=1; j < size-1; j++){
       parray_np[0][j]     =parray[0][j]+deltat*kappa*(parray[size-1][j]+parray[1][j]+parray[0][j-1]+parray[0][j+1]-4*parray[0][j])/(sqr(deltax));
-      parray_np[size-1][j]=parray[size-1][j]+deltat*kappa*(parray[size-2][j]+parray[0][j]+parray[size-1][j-1]+parray[size-1][j+1]-4*parray[size-1][j])/(sqr(deltax));
+      parray_np[size-1][j]=parray[0][j];
     }
 
     //Moving array n+1 to n
