@@ -1,8 +1,8 @@
 OBJ_1 = heat_serial.o
 OBJ_2 = heat_omp.o
 OBJ_3 = heat_mpi.o
-
-CXXFLAGS = -g -Wall
+CC=g++
+CXXFLAGS = -g -Wall -fopenmp
 
 all: heat_serial heat_omp heat_mpi
 
