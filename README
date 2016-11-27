@@ -1,0 +1,40 @@
+2D Heat-Diffusion Solver Version 1.5 11/23/2016
+
+GENERAL USAGE NOTES
+-------------------------
+Written in C++
+
+- The 2D Heat-Diffusion solver calculates the evolution of an nx*nx grid with boundary conditions T(x,0)=cos(x)^2, T(x,pi)=sin(x)^2 and T(0,y)=T(pi,y).
+
+- heat_serial solves serially.
+  Run by ./heat_serial <nx>
+  where <nx> is the grid length
+
+- heat_omp solves parallel for increased speed using OpenMP
+  Run by: ./heat_omp <nx> <n_threads>
+  where <nx> is the grid length and <n_threads> is the # of threads.
+
+- heat_mpi solves parallel using OpenMPI
+  Run by: ./heat_mpi <nx>
+  where <nx> is the grid length
+  See documentation on running MPI using multiple nodes and processors on
+  www.open-mpi.org
+
+- heat.run.x is instructions for running the heat_omp and heat_mpi on the -
+  Princeton Androit Cluster using x no. of processors.
+
+- Makefile. Makes heat_serial, heat_omp, heat_mpi.
+  NOTE: In order to make heat_omp and heat_mpi locally necessary libraries -
+  needs to be installed. OpenMP and OpenMPI is recommended.
+
+- plotArray.m is a Matlab script which reads output files produced the solver
+  and plots the data as a 2D image.
+
+OUTPUT
+--------------
+- Running the programs generates files temparray_(serial/omp/mpi)_<nx>.txt
+- The output files holds program Runtime values
+  (to compare for serial, omp and mpi) and the volume averaged temperature.
+
+For any questions please write andreasrousing@princeton.edu
+
